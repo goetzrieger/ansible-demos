@@ -1,0 +1,123 @@
+---
+#### REMOVE BUILT-IN DEMO CONTENT
+- name: delete demo job template
+  awx.awx.tower_job_template:
+    name: "{{ item }}"
+    state: absent
+  loop:
+    - INFRASTRUCTURE / Turn off IBM Community Grid
+    - Demo Job Template
+
+- name: remove demo credential
+  awx.awx.tower_credential:
+    username: admin
+    name: "Demo Credential"
+    kind: ssh
+    state: absent
+    organization: ""
+
+- name: remove demo inventory
+  awx.awx.tower_inventory:
+    name: "{{ item }}"
+    organization: "Default"
+    state: absent
+  loop:
+    - Workshop Inventory
+    - Demo Inventory
+
+- name: remove built-in tower project
+  awx.awx.tower_project:
+    name: "{{ item }}"
+    organization: "Default"
+    scm_type: git
+    scm_url: "https://github.com/ansible/ansible-tower-samples"
+    state: absent
+  loop:
+    - Ansible official demo project
+    - Demo Project
+#### END OF REMOVE BUILT-IN DEMO CONTENT
+
+#### INVENTORY
+- name: create workshop inventory
+  awx.awx.tower_inventory:
+    name: "Workshop Inventory"
+    organization: "Default"
+  register: workshop_inventory
+  until: workshop_inventory is success
+  delay: 3
+  retries: 5
+
+- name: Create Hosts
+  awx.awx.tower_host:
+    name: "{{ item }}"
+    inventory: "Workshop Inventory"
+    state: present
+  loop:
+    - node1
+    - node2
+    - node3
+
+- name: Add tower group
+  awx.awx.tower_group:
+    name: web
+    description: "Webservers"
+    inventory: "Workshop Inventory"
+    hosts:
+      - node1
+      - node2
+      - node3
+    state: present
+
+#### END OF INVENTORY
+
+#### CREDENTIAL
+- name: add SSH credential into Ansible Tower
+  awx.awx.tower_credential:
+    username: ec2-user
+    name: "Workshop Credential"
+    ssh_key_data: "{{ lookup('file', 'files/' + ssh_private_key) }}"
+    kind: ssh
+    organization: "Default"
+#### END OF CREDENTIAL
+
+#### Project
+- name: Create a Project
+  awx.awx.tower_project:
+    name: "Workshop Project"
+    organization: "Default"
+    scm_type: git
+    scm_url: https://github.com/ansible/workshop-examples.git
+    scm_branch: summit_2020
+
+#### Template
+- name: Create a Job Template
+  awx.awx.tower_job_template:
+    name: "Install Apache"
+    project: "Workshop Project"
+    inventory: "Workshop Inventory"
+    become_enabled: true
+    credentials:
+      - "Workshop Credential"
+    playbook: rhel/apache/apache_install.yml
+
+- name: Create a Job Template
+  awx.awx.tower_job_template:
+    name: "Create index.html"
+    project: "Workshop Project"
+    inventory: "Workshop Inventory"
+    become_enabled: true
+    credentials:
+      - "Workshop Credential"
+    playbook: rhel/apache/apache_role_install.yml
+    survey_enabled: yes
+    survey_spec: "{{ lookup('file', 'files/indexhtml_survey.json') }}"
+
+### Create user
+- name: Add tower user
+  awx.awx.tower_user:
+    username: wweb
+    password: r3dh4t1!
+    email: wweb@example.org
+    first_name: Werner
+    last_name: Web
+    state: present

@@ -1,0 +1,7 @@
+---
+- name: setup the basic Engine and Tower demo
+  hosts: localhost
+  connection: local
+
+  roles:
+    - setup_engine

@@ -1,0 +1,9 @@
+---
+- name: Setup Tower Demo content
+  hosts: localhost
+  gather_facts: false
+  collections:
+    - awx.awx
+
+  roles:
+    - setup_tower

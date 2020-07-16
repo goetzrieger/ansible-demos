@@ -1,0 +1,30 @@
+{
+    "name": "",
+    "description": "",
+    "spec": [
+        {
+            "question_name": "First Line",
+            "question_description": "",
+            "required": true,
+            "type": "text",
+            "variable": "first_line",
+            "min": 0,
+            "max": 1024,
+            "default": "",
+            "choices": "",
+            "new_question": true
+        },
+        {
+            "question_name": "Second Line",
+            "question_description": "",
+            "required": true,
+            "type": "text",
+            "variable": "second_line",
+            "min": 0,
+            "max": 1024,
+            "default": "",
+            "choices": "",
+            "new_question": true
+        }
+    ]
+}

@@ -1,0 +1,20 @@
+---
+- name: create directory for Ansible content
+  file:
+    path: "{{ ansible_content_dir }}"
+    state: directory
+    owner: ansible
+    group: ansible
+    mode: 0755 
+
+- name: populate ansible_content_dir
+  copy:
+    src: ../files/{{ item }}
+    dest: "{{ ansible_content_dir }}/{{ item }}"
+    owner: ansible
+    group: ansible
+    mode: 0644
+  with_items:
+    - inventory
+    - install_apache.yml
+    - install_apache_extended.yml

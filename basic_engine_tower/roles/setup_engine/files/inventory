@@ -1,0 +1,9 @@
+[webserver]
+host1.example.com
+
+[database]
+host2.example.com
+
+[ftpserver]
+host2.example.com
+
